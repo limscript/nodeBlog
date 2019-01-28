@@ -5,7 +5,11 @@ var mysql = require('./../database')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' })
+  const query = 'SELECT * FROM article'
+  mysql.query(query, (err, rows, fields) => {
+    const articles = rows
+    res.render('index', { articles })
+  })
 })
 
 /* 登录页 */
