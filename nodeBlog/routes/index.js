@@ -6,7 +6,7 @@ var formatDate = require('./../public/javascripts/untils')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  const query = 'SELECT * FROM article'
+  const query = 'SELECT * FROM article ORDER BY articleID DESC'
   mysql.query(query, (err, rows, fields) => {
     let articles = rows
     if (Array.isArray(articles)) {
@@ -44,8 +44,7 @@ router.post('/login', function(req, res, next) {
       res.render('login', { message: '用户名或者密码错误' })
       return
     }
-    // req.session.userSign = true
-    // req.session.userID = user.authorID
+    req.session.user = user
     res.redirect('/')
   })
 })
@@ -70,6 +69,37 @@ router.get('/articles/:articleID', function(req, res, next) {
       article.articleTime = formatDate(article.articleTime)
       res.render('article', { article })
     })
+  })
+})
+
+/* 写文章界面页 */
+router.get('/edit', function(req, res, next) {
+  res.render('edit')
+})
+
+/* 新增文章 */
+router.post('/edit', function(req, res, next) {
+  var title = req.body.title
+  var content = req.body.content
+  var author = req.session.user.authorName
+  // var query =
+  //   'INSERT article SET articleTitle=' +
+  //   mysql.escape(title) +
+  //   'articleAuthor=' +
+  //   mysql.escape(author) +
+  //   ',articleContent=' +
+  //   mysql.escape(content) +
+  //   ',articleTime=CURDATE()'
+  var query = `INSERT article SET articleTitle = ${mysql.escape(
+    title
+  )}, articleAuthor = ${mysql.escape(author)}, articleContent = ${mysql.escape(
+    content
+  )}, articleTime = CURDATE()`
+  mysql.query(query, (err, rows, fields) => {
+    if (err) {
+      return console.log(err)
+    }
+    res.redirect('/')
   })
 })
 module.exports = router
