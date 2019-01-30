@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cn" class="login">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1" />
-    <title>个人博客登录页</title>
-    <link rel="stylesheet" href="/stylesheets/normalize.css" />
-    <link rel="stylesheet" href="/stylesheets/main.css" />
-  </head>
+  <%- include("./common/head.ejs") %>
   <body>
     <section>
       <form action="/login" method="POST">
@@ -19,9 +13,6 @@
         <div class="form-group"><input type="submit" value="登录" /></div>
       </form>
     </section>
-    <footer>
-      <p>Copyright © 2016 Node</p>
-      <p>Powered by Express</p>
-    </footer>
+    <%- include("./common/footer.ejs") %>
   </body>
 </html>

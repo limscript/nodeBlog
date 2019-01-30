@@ -2,12 +2,18 @@ var express = require('express')
 var router = express.Router()
 var crypto = require('crypto')
 var mysql = require('./../database')
+var formatDate = require('./../public/javascripts/untils')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   const query = 'SELECT * FROM article'
   mysql.query(query, (err, rows, fields) => {
-    const articles = rows
+    let articles = rows
+    if (Array.isArray(articles)) {
+      rows.map(item => {
+        item.articleTime = formatDate(item.articleTime)
+      })
+    }
     res.render('index', { articles })
   })
 })
@@ -44,4 +50,26 @@ router.post('/login', function(req, res, next) {
   })
 })
 
+/* 文章内容页 */
+router.get('/articles/:articleID', function(req, res, next) {
+  const articleID = req.params.articleID
+  const query = 'SELECT * FROM article WHERE articleID=' + mysql.escape(articleID)
+  mysql.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err)
+      return
+    }
+    const queryForClick =
+      'UPDATE article SET articleClick=articleClick + 1 WHERE articleID=' + mysql.escape(articleID)
+    let article = rows[0]
+    mysql.query(queryForClick, (err, rows, fields) => {
+      if (err) {
+        console.log(err)
+        return
+      }
+      article.articleTime = formatDate(article.articleTime)
+      res.render('article', { article })
+    })
+  })
+})
 module.exports = router
