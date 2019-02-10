@@ -14,13 +14,19 @@ router.get('/', function(req, res, next) {
         item.articleTime = formatDate(item.articleTime)
       })
     }
-    res.render('index', { articles })
+    res.render('index', { articles, user: req.session.user })
   })
 })
 
 /* 登录页 */
 router.get('/login', function(req, res, next) {
   res.render('login', { message: '' })
+})
+
+/* 退出登录 */
+router.get('/logout', function(req, res, next) {
+  res.session.user = null
+  res.redirect('/')
 })
 
 /* 登录信息验证 */
@@ -67,14 +73,18 @@ router.get('/articles/:articleID', function(req, res, next) {
         return
       }
       article.articleTime = formatDate(article.articleTime)
-      res.render('article', { article })
+      res.render('article', { article, user: req.session.user })
     })
   })
 })
 
 /* 写文章界面页 */
 router.get('/edit', function(req, res, next) {
-  res.render('edit')
+  const user = req.session.user
+  if (!user) {
+    return res.redirect('/login')
+  }
+  res.render('edit', { user: req.session.user })
 })
 
 /* 新增文章 */
@@ -82,14 +92,6 @@ router.post('/edit', function(req, res, next) {
   var title = req.body.title
   var content = req.body.content
   var author = req.session.user.authorName
-  // var query =
-  //   'INSERT article SET articleTitle=' +
-  //   mysql.escape(title) +
-  //   'articleAuthor=' +
-  //   mysql.escape(author) +
-  //   ',articleContent=' +
-  //   mysql.escape(content) +
-  //   ',articleTime=CURDATE()'
   var query = `INSERT article SET articleTitle = ${mysql.escape(
     title
   )}, articleAuthor = ${mysql.escape(author)}, articleContent = ${mysql.escape(
@@ -101,5 +103,15 @@ router.post('/edit', function(req, res, next) {
     }
     res.redirect('/')
   })
+})
+
+/* 友情链接页面 */
+router.get('/friends', function(req, res, next) {
+  res.render('friends', { user: req.session.user })
+})
+
+/* 关于博客页面 */
+router.get('/about', function(req, res, next) {
+  res.render('about', { user: req.session.user })
 })
 module.exports = router
