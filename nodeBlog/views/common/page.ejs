@@ -1,0 +1,9 @@
+<% if (pageNum > 1){ %>
+<section class="page">
+  <% for(let i = 1, max = pageNum; i <= max; i++) { %>
+    <span <% if(i == page){%> class="active" <% } %>>
+      <a href="/?page=<%= i %>"><%= i %></a>
+    </span>
+  <% } %>
+</section>
+<% } %>
